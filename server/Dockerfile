@@ -1,13 +1,11 @@
-FROM ubuntu:16.04
+FROM alpine
 
-RUN apt-get update \
-        && apt-get --yes install python3 python3-pip \
-        && apt-get --yes autoremove \
-        && apt-get --yes autoclean
+RUN apk add py3-pip
 
 COPY requirements.txt /server/
 
-RUN /usr/bin/pip3 --disable-pip-version-check install --requirement /server/requirements.txt
+RUN /usr/bin/pip3 install --upgrade --force-reinstall setuptools==45.3.0 \
+    && /usr/bin/pip3 --disable-pip-version-check install --requirement /server/requirements.txt
 
 RUN /bin/sh -c "mkdir /db"
 
@@ -19,6 +17,6 @@ WORKDIR /server
 
 COPY . ./
 
-CMD /bin/sh ./start_server.sh
+RUN rm -rf Dockerfile
 
-#CMD cd /server && /bin/sh ./start_server.sh
+CMD /bin/sh ./start_server.sh
